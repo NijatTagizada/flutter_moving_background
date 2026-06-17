@@ -16,7 +16,11 @@ class BubbleBackground extends StatefulWidget {
     this.blurSigma = 10.0,
     this.child,
     this.isPaused = false,
+    this.backgroundColor,
   });
+
+  /// The background color behind the bubbles.
+  final Color? backgroundColor;
 
   /// Number of bubbles to display.
   final int numBubbles;
@@ -129,9 +133,12 @@ class _BubbleBackgroundState extends State<BubbleBackground> with SingleTickerPr
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _painter,
-      child: widget.child ?? Container(),
+    return ColoredBox(
+      color: widget.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
+      child: CustomPaint(
+        painter: _painter,
+        child: widget.child ?? Container(),
+      ),
     );
   }
 }
@@ -157,6 +164,7 @@ class _BubblePainter extends CustomPainter {
   final List<_Bubble> _bubbles = [];
   final Random _random = Random();
   Size? _lastSize;
+  final Paint _paint = Paint()..style = PaintingStyle.fill;
 
   void _initBubbles(Size size) {
     _bubbles.clear();
@@ -210,12 +218,10 @@ class _BubblePainter extends CustomPainter {
       _initBubbles(size);
     }
 
-    final paint = Paint()..style = PaintingStyle.fill;
-
     for (final bubble in _bubbles) {
-      paint.color = bubble.color;
-      paint.maskFilter = MaskFilter.blur(BlurStyle.normal, blurSigma);
-      canvas.drawCircle(bubble.position, bubble.radius, paint);
+      _paint.color = bubble.color;
+      _paint.maskFilter = MaskFilter.blur(BlurStyle.normal, blurSigma);
+      canvas.drawCircle(bubble.position, bubble.radius, _paint);
     }
   }
 

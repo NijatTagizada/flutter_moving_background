@@ -1,3 +1,17 @@
+## [0.2.0] - 2026-06-18
+
+* **New Presets**: Added pre-configured named constructors for `MovingBackground` (`MovingBackground.sunset()`, `MovingBackground.aurora()`, `MovingBackground.cyberpunk()`) and a builder-based theme-aware `MovingBackground.themed(context)` constructor.
+* **New Background Patterns**: 
+    * Added `ConstellationBackground`: A particle web system connecting nearby floating nodes with hover/touch interactive attraction.
+    * Added `WaveBackground`: Soothing, layered flowing sine-waves with parallax speeds.
+* **Significant Performance Optimizations**:
+    * Zero-allocation paint loops: Painters now cache and reuse `Paint` and `Path` objects across frame calls instead of allocating them 60+ times per second.
+    * Shader Caching in Rain: Drastically reduced GPU/CPU jank in `RainBackground` by caching linear gradient shaders per-layer/color rather than compiling them per-drop on every frame.
+* **API Cleanups**:
+    * Deprecated `CustomRain` in favor of a single consolidated `RainBackground`.
+    * Added `backgroundColor` support for `BubbleBackground` and `RainBackground`.
+    * Upgraded code to use non-deprecated Flutter APIs (`Color.toARGB32()`, `Color.withValues()`).
+
 ## [0.1.0] - 2026-01-30
 
 * **Major Performance Overhaul**: Refactored `MovingBackground` to use a single `Ticker` and `CustomPainter`. This significantly reduces CPU/GPU usage and provides much smoother animations.

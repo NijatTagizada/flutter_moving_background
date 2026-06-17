@@ -3,6 +3,8 @@ library flutter_moving_background;
 
 export 'components/moving_circle.dart';
 export 'components/bubble_background.dart';
+export 'components/constellation_background.dart';
+export 'components/wave_background.dart';
 export 'rain_background.dart';
 export 'rain_custom_background.dart';
 export 'animation_types.dart';
@@ -25,6 +27,75 @@ class MovingBackground extends StatefulWidget {
     this.isPaused = false,
     required this.circles,
   });
+
+  /// A warm sunset preset with orange, pink, and deep purple glowing circles.
+  const MovingBackground.sunset({
+    super.key,
+    this.child,
+    this.backgroundColor = const Color(0xFF1E0E3B),
+    this.animationType = AnimationType.pulse,
+    this.duration = const Duration(seconds: 12),
+    this.isPaused = false,
+  }) : circles = const [
+          MovingCircle(color: Color(0xFFFF5E62), radius: 500, blurSigma: 40),
+          MovingCircle(color: Color(0xFFFF9966), radius: 400, blurSigma: 35),
+          MovingCircle(color: Color(0xFF8A2387), radius: 600, blurSigma: 50),
+        ];
+
+  /// A vibrant neon-aurora preset with green, teal, and blue glowing circles.
+  const MovingBackground.aurora({
+    super.key,
+    this.child,
+    this.backgroundColor = const Color(0xFF020E17),
+    this.animationType = AnimationType.moveAndFade,
+    this.duration = const Duration(seconds: 15),
+    this.isPaused = false,
+  }) : circles = const [
+          MovingCircle(color: Color(0xFF00FF87), radius: 550, blurSigma: 45),
+          MovingCircle(color: Color(0xFF60EFFF), radius: 450, blurSigma: 35),
+          MovingCircle(color: Color(0xFF0061FF), radius: 600, blurSigma: 50),
+        ];
+
+  /// A cyberpunk preset with electric magenta, bright cyan, and deep background.
+  const MovingBackground.cyberpunk({
+    super.key,
+    this.child,
+    this.backgroundColor = const Color(0xFF0F051D),
+    this.animationType = AnimationType.scale,
+    this.duration = const Duration(seconds: 10),
+    this.isPaused = false,
+  }) : circles = const [
+          MovingCircle(color: Color(0xFFFF007F), radius: 500, blurSigma: 40),
+          MovingCircle(color: Color(0xFF00F0FF), radius: 450, blurSigma: 35),
+          MovingCircle(color: Color(0xFF7B2CBF), radius: 600, blurSigma: 50),
+        ];
+
+  /// A theme-aware moving background that extracts colors from the active Theme.
+  MovingBackground.themed(
+    BuildContext context, {
+    super.key,
+    this.child,
+    this.backgroundColor,
+    this.animationType = AnimationType.moveAndFade,
+    this.duration = const Duration(seconds: 15),
+    this.isPaused = false,
+  }) : circles = [
+          MovingCircle(
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
+            radius: 500,
+            blurSigma: 40,
+          ),
+          MovingCircle(
+            color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.35),
+            radius: 400,
+            blurSigma: 35,
+          ),
+          MovingCircle(
+            color: Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.3),
+            radius: 600,
+            blurSigma: 50,
+          ),
+        ];
 
   final Widget? child;
   final Color? backgroundColor;
@@ -132,7 +203,7 @@ class _MovingBackgroundState extends State<MovingBackground> with SingleTickerPr
         }
 
         return ColoredBox(
-          color: widget.backgroundColor ?? Colors.white,
+          color: widget.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
           child: Stack(
             children: [
               Positioned.fill(

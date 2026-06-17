@@ -8,12 +8,13 @@ See an Example here : https://movingbg.netlify.app/
 
 ## Features
 
-- [X] **High Performance**: Optimized with a single `Ticker` and `CustomPainter` for smooth 60fps+ animations.
-- [X] **Multiple Animation Types**: `moveAndFade`, `pulse`, `scale`, and `move`.
-- [X] **New Background Styles**: Includes `RainBackground` and `BubbleBackground`.
+- [X] **High Performance**: Optimized with a single `Ticker`, `CustomPainter`, and zero-allocation paint loops for smooth 60fps+ animations.
+- [X] **Shader Caching**: Highly optimized parallax trail rendering in rain animations to prevent frame drops.
+- [X] **Beautiful Presets**: Built-in design presets (`sunset`, `aurora`, `cyberpunk`, `themed`).
+- [X] **Multiple Background Styles**: Includes `MovingBackground`, `BubbleBackground`, `RainBackground`, `ConstellationBackground`, and `WaveBackground`.
 - [X] **Pause/Resume**: Easily pause animations when not needed to save battery.
 - [X] **Customizable**: Control colors, radius, blur, speed, and more.
-- [X] **Lightweight**: Minimal impact on your app's widget tree.
+- [X] **Lightweight**: Minimal impact on your app's widget tree (zero dependencies outside Flutter).
 
 ## Supported Platforms
 
@@ -28,7 +29,7 @@ In your flutter project add the dependency:
 
 ```yaml
 dependencies:
-  flutter_moving_background: ^0.1.0
+  flutter_moving_background: ^0.2.0
 ```
 
 Import the package:
@@ -39,7 +40,25 @@ import 'package:flutter_moving_background/flutter_moving_background.dart';
 
 ## How to use
 
-### Moving Circles Background
+### 1. Moving Circles Presets (One-Liners)
+
+Create beautiful glowing backgrounds instantly using const preset constructors:
+
+```dart
+// Warm sunset oranges & deep purples
+MovingBackground.sunset(child: YourWidget())
+
+// Neon green & dark space blue auroras
+MovingBackground.aurora(child: YourWidget())
+
+// Electric magenta & neon cyan cyberpunk theme
+MovingBackground.cyberpunk(child: YourWidget())
+
+// Theme-aware color schemes (inherits primary/secondary/tertiary colors from active ThemeData)
+MovingBackground.themed(context, child: YourWidget())
+```
+
+### 2. Custom Moving Circles
 
 ```dart
 MovingBackground(
@@ -55,7 +74,37 @@ MovingBackground(
 )
 ```
 
-### Bubble Background
+### 3. Constellation Background (Interactive Particle Web)
+
+A tech-oriented particle system where floating nodes slowly move. Nearby nodes are connected by dynamic, distance-based web lines. Includes mouse hover / touch attraction.
+
+```dart
+ConstellationBackground(
+  particleCount: 50,
+  maxDistance: 120.0,
+  speed: 1.0,
+  colors: const [Colors.cyanAccent, Colors.pinkAccent],
+  lineColor: Colors.white12,
+  child: YourWidget(),
+)
+```
+
+### 4. Flowing Waves Background
+
+Layered sine waves that flow horizontally with parallax speeds and customizable wave heights/amplitudes for soothing fluid landscape aesthetics.
+
+```dart
+WaveBackground(
+  waveCount: 3,
+  speed: 1.0,
+  amplitude: 25.0,
+  frequency: 0.005,
+  colors: const [Colors.blue, Colors.teal, Colors.cyan],
+  child: YourWidget(),
+)
+```
+
+### 5. Bubble Background
 
 ```dart
 BubbleBackground(
@@ -66,13 +115,14 @@ BubbleBackground(
 )
 ```
 
-### Rain Background
+### 6. Rain Background
 
 ```dart
 RainBackground(
   numberOfDrops: 100,
   fallSpeed: 2.0,
   hasTrail: true,
+  colors: const [Colors.blue],
   child: YourWidget(),
 )
 ```

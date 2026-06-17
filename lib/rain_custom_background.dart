@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'dart:math';
 
+@Deprecated('Use RainBackground instead. This widget will be removed in future versions.')
 class CustomRain extends StatefulWidget {
    CustomRain({
     super.key,
@@ -134,16 +135,20 @@ class CustomRainState extends State<CustomRain>
     }
     if (widget.colors != oldWidget.colors) {
       parallaxRainPainter.dropColors = widget.colors;
+      parallaxRainPainter.clearShaderCache();
     }
     if (widget.trailStartFraction != oldWidget.trailStartFraction) {
       parallaxRainPainter.trailStartFraction = widget.trailStartFraction;
+      parallaxRainPainter.clearShaderCache();
     }
     if (widget.layersDistance != oldWidget.layersDistance) {
       parallaxRainPainter.distanceBetweenLayers = widget.layersDistance;
+      parallaxRainPainter.clearShaderCache();
     }
 
     if (needsReinit) {
       parallaxRainPainter.dropList.clear();
+      parallaxRainPainter.clearShaderCache();
     }
 
     // Handle pause/resume
@@ -196,6 +201,9 @@ class CustomParallaxRainPainter extends CustomPainter {
   final ValueNotifier notifier;
   Random random = Random();
   Size? _lastSize;
+  final Map<String, Shader> _shaderCache = {};
+
+  void clearShaderCache() => _shaderCache.clear();
 
   CustomParallaxRainPainter({
     required this.numberOfDrops,
@@ -208,7 +216,9 @@ class CustomParallaxRainPainter extends CustomPainter {
     required this.trailStartFraction,
     required this.distanceBetweenLayers,
     required this.notifier,
-  }) : super(repaint: notifier);
+  }) : super(repaint: notifier) {
+    paintObject = Paint()..style = PaintingStyle.fill;
+  }
 
   void initialize(Canvas canvas, Size size) {
     double effectiveLayer;
@@ -276,27 +286,36 @@ class CustomParallaxRainPainter extends CustomPainter {
       initialize(canvas, size);
     }
 
-    // Initialize paintObject if not done yet (though initialize() does it for RainBackground, CustomRain didn't have it in original code but used it in paint)
-    // In original code CustomRain didn't initialize paintObject in initialize(), but used it in paint().
-    // We should initialize it.
-    paintObject = Paint()..style = PaintingStyle.fill;
-
     for (int i = 0; i < dropList.length; i++) {
       final CustomDrop currentDrop = dropList[i];
       final int currentLayer = currentDrop.dropLayer;
       final Color currentColor = currentDrop.dropColor;
 
       final double opacity = ((currentLayer + 1) / numberOfLayers);
-      final Color paintedColor = currentColor.withOpacity(opacity);
+      final Color paintedColor = currentColor.withValues(alpha: opacity);
 
       if (trail) {
-        _trailPaint.shader = LinearGradient(
-          stops: [trailStartFraction, 1.0],
-          begin: Alignment.bottomCenter,
-          end: Alignment.topCenter,
-          colors: [paintedColor, Colors.transparent],
-        ).createShader(currentDrop.drop);
-        canvas.drawRect(currentDrop.drop, _trailPaint);
+        final double width = currentDrop.drop.width;
+        final double height = currentDrop.drop.height;
+        final String cacheKey = '$currentLayer-${currentColor.toARGB32()}-$width-$height';
+        
+        var shader = _shaderCache[cacheKey];
+        if (shader == null) {
+          shader = LinearGradient(
+            stops: [trailStartFraction, 1.0],
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+            colors: [paintedColor, Colors.transparent],
+          ).createShader(Rect.fromLTWH(0, 0, width, height));
+          _shaderCache[cacheKey] = shader;
+        }
+
+        _trailPaint.shader = shader;
+        
+        canvas.save();
+        canvas.translate(currentDrop.drop.left, currentDrop.drop.top);
+        canvas.drawRect(Rect.fromLTWH(0, 0, width, height), _trailPaint);
+        canvas.restore();
       } else {
         paintObject.color = paintedColor;
         canvas.drawRect(currentDrop.drop, paintObject);

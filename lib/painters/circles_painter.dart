@@ -23,6 +23,7 @@ class MovingCirclesPainter extends CustomPainter {
   final List<CircleState> circles;
   final Listenable repaint;
   final AnimationType animationType;
+  final Paint _paint = Paint()..style = PaintingStyle.fill;
 
   MovingCirclesPainter({
     required this.circles,
@@ -32,11 +33,9 @@ class MovingCirclesPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()..style = PaintingStyle.fill;
-
     for (final circle in circles) {
-      paint.color = circle.config.color;
-      paint.maskFilter = MaskFilter.blur(BlurStyle.normal, circle.config.blurSigma);
+      _paint.color = circle.config.color;
+      _paint.maskFilter = MaskFilter.blur(BlurStyle.normal, circle.config.blurSigma);
 
       double opacity = 1.0;
       double radiusMultiplier = 1.0;
@@ -60,12 +59,12 @@ class MovingCirclesPainter extends CustomPainter {
           break;
       }
 
-      paint.color = circle.config.color.withOpacity(opacity);
+      _paint.color = circle.config.color.withValues(alpha: opacity);
 
       canvas.drawCircle(
         circle.currentPos,
         (circle.config.radius / 2) * radiusMultiplier,
-        paint,
+        _paint,
       );
     }
   }

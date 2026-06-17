@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../lib/flutter_moving_background.dart';
+import 'package:flutter_moving_background/flutter_moving_background.dart';
 
 void main() {
   testWidgets('MovingBackground renders correctly', (WidgetTester tester) async {
@@ -20,12 +20,19 @@ void main() {
     // Verify that MovingBackground renders correctly.
     expect(find.byType(MovingBackground), findsOneWidget);
     
-    // Verify the background color is applied via ColoredBox
-    final coloredBox = tester.widget<ColoredBox>(find.byType(ColoredBox));
+    // Verify the background color is applied via ColoredBox within MovingBackground
+    final coloredBoxFinder = find.descendant(
+      of: find.byType(MovingBackground),
+      matching: find.byType(ColoredBox),
+    );
+    final coloredBox = tester.widget<ColoredBox>(coloredBoxFinder);
     expect(coloredBox.color, Colors.blue);
 
     // Verify the presence of CustomPaint which draws the circles
-    expect(find.byType(CustomPaint), findsOneWidget);
+    expect(
+      find.descendant(of: find.byType(MovingBackground), matching: find.byType(CustomPaint)),
+      findsOneWidget,
+    );
   });
 
   testWidgets('MovingBackground respects isPaused', (WidgetTester tester) async {
@@ -51,13 +58,16 @@ void main() {
        MaterialApp(
         home: RainBackground(
           numberOfDrops: 50,
-          colors: [Colors.blue],
+          colors: const [Colors.blue],
         ),
       ),
     );
 
     expect(find.byType(RainBackground), findsOneWidget);
-    expect(find.byType(CustomPaint), findsOneWidget);
+    expect(
+      find.descendant(of: find.byType(RainBackground), matching: find.byType(CustomPaint)),
+      findsOneWidget,
+    );
   });
 
   testWidgets('BubbleBackground renders correctly', (WidgetTester tester) async {
@@ -70,7 +80,10 @@ void main() {
     );
 
     expect(find.byType(BubbleBackground), findsOneWidget);
-    expect(find.byType(CustomPaint), findsOneWidget);
+    expect(
+      find.descendant(of: find.byType(BubbleBackground), matching: find.byType(CustomPaint)),
+      findsOneWidget,
+    );
   });
 
   testWidgets('MovingBackground handles child widget', (WidgetTester tester) async {
@@ -84,5 +97,72 @@ void main() {
     );
 
     expect(find.text('Hello World'), findsOneWidget);
+  });
+
+  testWidgets('MovingBackground presets render correctly', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: Column(
+            children: [
+              Expanded(child: MovingBackground.sunset()),
+              Expanded(child: MovingBackground.aurora()),
+              Expanded(child: MovingBackground.cyberpunk()),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(MovingBackground), findsNWidgets(3));
+  });
+
+  testWidgets('MovingBackground.themed renders correctly', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        ),
+        home: Builder(
+          builder: (context) {
+            return MovingBackground.themed(context);
+          },
+        ),
+      ),
+    );
+
+    expect(find.byType(MovingBackground), findsOneWidget);
+  });
+
+  testWidgets('ConstellationBackground renders correctly', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: ConstellationBackground(
+          particleCount: 10,
+        ),
+      ),
+    );
+
+    expect(find.byType(ConstellationBackground), findsOneWidget);
+    expect(
+      find.descendant(of: find.byType(ConstellationBackground), matching: find.byType(CustomPaint)),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('WaveBackground renders correctly', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: WaveBackground(
+          waveCount: 2,
+        ),
+      ),
+    );
+
+    expect(find.byType(WaveBackground), findsOneWidget);
+    expect(
+      find.descendant(of: find.byType(WaveBackground), matching: find.byType(CustomPaint)),
+      findsOneWidget,
+    );
   });
 }

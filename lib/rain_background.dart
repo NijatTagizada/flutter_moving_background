@@ -15,11 +15,16 @@ class RainBackground extends StatefulWidget {
     this.child,
     this.isInBackground = true,
     this.hasTrail = false,
-    this.isPaused = false, required this.colors,
+    this.isPaused = false,
+    this.backgroundColor,
+    required this.colors,
   })  : assert(numLayers >= 1, "The minimum number of layers is 1"),
         assert(colors.isNotEmpty, "The drop colors list cannot be empty"),
         assert(layersDistance > 0,
             "The distance between layers cannot be 0, set the number of layers to 1 at least");
+
+  /// The background color behind the rain.
+  final Color? backgroundColor;
 
   /// Number of drops on screen at any moment
   final int numberOfDrops;
@@ -134,17 +139,20 @@ class RainBackgroundState extends State<RainBackground>
     }
     if (widget.colors != oldWidget.colors) {
       parallaxRainPainter.dropColors = widget.colors;
-      // We might want to re-assign colors to existing drops or just let new drops pick new colors
+      parallaxRainPainter.clearShaderCache();
     }
     if (widget.trailStartFraction != oldWidget.trailStartFraction) {
       parallaxRainPainter.trailStartFraction = widget.trailStartFraction;
+      parallaxRainPainter.clearShaderCache();
     }
     if (widget.layersDistance != oldWidget.layersDistance) {
       parallaxRainPainter.distanceBetweenLayers = widget.layersDistance;
+      parallaxRainPainter.clearShaderCache();
     }
 
     if (needsReinit) {
       parallaxRainPainter.dropList.clear();
+      parallaxRainPainter.clearShaderCache();
     }
 
     // Handle pause/resume
@@ -167,12 +175,13 @@ class RainBackgroundState extends State<RainBackground>
 
   @override
   Widget build(BuildContext context) {
-    return ClipRect(
-      child: CustomPaint(
-        painter: (widget.isInBackground) ? parallaxRainPainter : null,
-        foregroundPainter:
-            (widget.isInBackground) ? null : parallaxRainPainter,
-        child: Container(
+    return ColoredBox(
+      color: widget.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
+      child: ClipRect(
+        child: CustomPaint(
+          painter: (widget.isInBackground) ? parallaxRainPainter : null,
+          foregroundPainter:
+              (widget.isInBackground) ? null : parallaxRainPainter,
           child: widget.child,
         ),
       ),
@@ -197,6 +206,9 @@ class ParallaxRainPainter extends CustomPainter {
   final ValueNotifier notifier;
   Random random = Random();
   Size? _lastSize;
+  final Map<String, Shader> _shaderCache = {};
+
+  void clearShaderCache() => _shaderCache.clear();
 
   ParallaxRainPainter({
     required this.numberOfDrops,
@@ -287,16 +299,30 @@ class ParallaxRainPainter extends CustomPainter {
       final Color currentColor = currentDrop.dropColor;
 
       final double opacity = ((currentLayer + 1) / numberOfLayers);
-      final Color paintedColor = currentColor.withOpacity(opacity);
+      final Color paintedColor = currentColor.withValues(alpha: opacity);
 
       if (trail) {
-        _trailPaint.shader = LinearGradient(
-          stops: [trailStartFraction, 1.0],
-          begin: Alignment.bottomCenter,
-          end: Alignment.topCenter,
-          colors: [paintedColor, Colors.transparent],
-        ).createShader(currentDrop.drop);
-        canvas.drawRect(currentDrop.drop, _trailPaint);
+        final double width = currentDrop.drop.width;
+        final double height = currentDrop.drop.height;
+        final String cacheKey = '$currentLayer-${currentColor.toARGB32()}-$width-$height';
+        
+        var shader = _shaderCache[cacheKey];
+        if (shader == null) {
+          shader = LinearGradient(
+            stops: [trailStartFraction, 1.0],
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+            colors: [paintedColor, Colors.transparent],
+          ).createShader(Rect.fromLTWH(0, 0, width, height));
+          _shaderCache[cacheKey] = shader;
+        }
+
+        _trailPaint.shader = shader;
+        
+        canvas.save();
+        canvas.translate(currentDrop.drop.left, currentDrop.drop.top);
+        canvas.drawRect(Rect.fromLTWH(0, 0, width, height), _trailPaint);
+        canvas.restore();
       } else {
         paintObject.color = paintedColor;
         canvas.drawRect(currentDrop.drop, paintObject);
