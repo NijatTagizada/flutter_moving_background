@@ -1,0 +1,10 @@
+# Ignore large video assets in the pub.dev release to keep the package lightweight.
+# These will still be versioned on GitHub and rendered dynamically on pub.dev and GitHub READMEs.
+videos/
+
+# Ignore test caches and build artifacts
+test_cache/
+.dart_tool/
+build/
+.DS_Store
+*.log

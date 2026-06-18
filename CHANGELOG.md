@@ -1,4 +1,4 @@
-## [0.2.0] - 2026-06-18
+## [0.3.0] - 2026-06-18
 
 * **New Presets**: Added pre-configured named constructors for `MovingBackground` (`MovingBackground.sunset()`, `MovingBackground.aurora()`, `MovingBackground.cyberpunk()`) and a builder-based theme-aware `MovingBackground.themed(context)` constructor.
 * **New Background Patterns**: 

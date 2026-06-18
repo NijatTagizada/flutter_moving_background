@@ -4,7 +4,42 @@ A high-performance Flutter package for creating beautiful, customizable moving b
 
 See an Example here : https://movingbg.netlify.app/
 
-![Example GIF](gifs/example.gif)
+<table>
+  <tr>
+    <td>
+      <p align="center"><b>Sunset Preset</b></p>
+      <video src="https://github.com/user-attachments/assets/b3f62cfb-8126-491f-bd4e-a6b46cef5bdd" width="220" autoplay loop muted playsinline></video>
+    </td>
+    <td>
+      <p align="center"><b>Aurora Preset</b></p>
+      <video src="https://github.com/user-attachments/assets/04448d77-cb5c-4c10-bbe5-b166fffee7d3" width="220" autoplay loop muted playsinline></video>
+    </td>
+    <td>
+      <p align="center"><b>Cyberpunk Preset</b></p>
+      <video src="https://github.com/user-attachments/assets/08fd5506-63f5-4b54-9919-a66e17ac1aa8" width="220" autoplay loop muted playsinline></video>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p align="center"><b>Constellation</b></p>
+      <video src="https://github.com/user-attachments/assets/c8a78c4c-30c0-4a12-80dc-c61e31cc20c9" width="220" autoplay loop muted playsinline></video>
+    </td>
+    <td>
+      <p align="center"><b>Flowing Waves</b></p>
+      <video src="https://github.com/user-attachments/assets/c8de6298-bc7f-4d7e-b896-e3330687346b" width="220" autoplay loop muted playsinline></video>
+    </td>
+    <td>
+      <p align="center"><b>Bouncing Bubbles</b></p>
+      <video src="https://github.com/user-attachments/assets/343daf9b-3883-4ac1-945a-49a614ab8a88" width="220" autoplay loop muted playsinline></video>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center">
+      <p align="center"><b>Parallax Rain</b></p>
+      <video src="https://github.com/user-attachments/assets/8bd9ed83-942d-4fbd-b0e2-369193ba2cbc" width="450" autoplay loop muted playsinline></video>
+    </td>
+  </tr>
+</table>
 
 ## Features
 
@@ -29,7 +64,7 @@ In your flutter project add the dependency:
 
 ```yaml
 dependencies:
-  flutter_moving_background: ^0.2.0
+  flutter_moving_background: ^0.3.0
 ```
 
 Import the package:
