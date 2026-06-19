@@ -46,15 +46,15 @@ class _MyAppState extends State<MyApp> {
 }
 
 enum BackgroundStyle {
+  waves,
+  rain,
   customCircles,
   sunsetPreset,
   auroraPreset,
   cyberpunkPreset,
   themedPreset,
   bubbles,
-  rain,
   constellation,
-  waves,
 }
 
 class App extends StatefulWidget {
@@ -72,7 +72,14 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  BackgroundStyle _selectedStyle = BackgroundStyle.auroraPreset;
+  BackgroundStyle _selectedStyle = BackgroundStyle.waves;
+  final ScrollController _chipScrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _chipScrollController.dispose();
+    super.dispose();
+  }
 
   Widget _buildBackground(BuildContext context, Widget child) {
     switch (_selectedStyle) {
@@ -168,108 +175,97 @@ class _AppState extends State<App> {
     }
   }
 
+  String _labelFor(BackgroundStyle style) {
+    switch (style) {
+      case BackgroundStyle.customCircles:
+        return 'Custom Circles';
+      case BackgroundStyle.sunsetPreset:
+        return 'Sunset';
+      case BackgroundStyle.auroraPreset:
+        return 'Aurora';
+      case BackgroundStyle.cyberpunkPreset:
+        return 'Cyberpunk';
+      case BackgroundStyle.themedPreset:
+        return 'Theme-Aware';
+      case BackgroundStyle.bubbles:
+        return 'Bouncing Bubbles';
+      case BackgroundStyle.rain:
+        return 'Parallax Rain';
+      case BackgroundStyle.constellation:
+        return 'Constellation';
+      case BackgroundStyle.waves:
+        return 'Flowing Waves';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final textColor = widget.darkMode ? Colors.white : Colors.black87;
-    final cardColor = widget.darkMode
-        ? Colors.black.withValues(alpha: 0.45)
-        : Colors.white.withValues(alpha: 0.7);
 
     return Scaffold(
       body: _buildBackground(
         context,
         SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Glassmorphic title card
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24.0, vertical: 32.0),
-                    child: Row(
-                      spacing: 10,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "Dark Mode",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600, color: textColor),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Top bar: title + dark mode toggle
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 8, 0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Moving Backgrounds',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: textColor,
                         ),
-                        Switch(
-                          value: widget.darkMode,
-                          onChanged: widget.onToggleDarkMode,
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Style selection panel
-                  Card(
-                    color: cardColor,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                      side: BorderSide(
-                        color:
-                            widget.darkMode ? Colors.white10 : Colors.black12,
-                        width: 1.0,
                       ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            "SELECT BACKGROUND PATTERN",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.5,
-                              color: textColor.withValues(alpha: 0.6),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Wrap(
-                            alignment: WrapAlignment.center,
-                            spacing: 8.0,
-                            runSpacing: 8.0,
-                            children: BackgroundStyle.values.map((style) {
-                              final isSelected = style == _selectedStyle;
-                              final label = style.name
-                                  .replaceAll('Preset', '')
-                                  .replaceAll('custom', 'Custom ')
-                                  .replaceAll('sunset', 'Sunset')
-                                  .replaceAll('aurora', 'Aurora')
-                                  .replaceAll('cyberpunk', 'Cyberpunk')
-                                  .replaceAll('themed', 'Theme-Aware')
-                                  .replaceAll('bubbles', 'Bouncing Bubbles')
-                                  .replaceAll('rain', 'Parallax Rain')
-                                  .replaceAll('constellation', 'Constellation')
-                                  .replaceAll('waves', 'Flowing Waves');
-                              return ChoiceChip(
-                                label: Text(label),
-                                selected: isSelected,
-                                onSelected: (selected) {
-                                  if (selected) {
-                                    setState(() {
-                                      _selectedStyle = style;
-                                    });
-                                  }
-                                },
-                              );
-                            }).toList(),
-                          ),
-                        ],
+                    IconButton.filledTonal(
+                      onPressed: () =>
+                          widget.onToggleDarkMode(!widget.darkMode),
+                      tooltip:
+                          widget.darkMode ? 'Switch to light' : 'Switch to dark',
+                      icon: Icon(
+                        widget.darkMode ? Icons.light_mode : Icons.dark_mode,
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+              // Horizontal selectable pattern list
+              SizedBox(
+                height: 48,
+                child: ListView.separated(
+                  controller: _chipScrollController,
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: BackgroundStyle.values.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  itemBuilder: (context, index) {
+                    final style = BackgroundStyle.values[index];
+                    final isSelected = style == _selectedStyle;
+                    return Center(
+                      child: ChoiceChip(
+                        label: Text(_labelFor(style)),
+                        selected: isSelected,
+                        showCheckmark: false,
+                        onSelected: (selected) {
+                          if (selected) {
+                            setState(() => _selectedStyle = style);
+                          }
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+              // The rest of the screen stays clear so the background shines.
+              const Expanded(child: SizedBox.shrink()),
+            ],
           ),
         ),
       ),
