@@ -80,11 +80,15 @@ class _AppState extends State<App> {
         return MovingBackground(
           duration: const Duration(seconds: 8),
           animationType: AnimationType.pulse,
-          backgroundColor: widget.darkMode ? const Color(0xFF0D0D1E) : Colors.grey.shade50,
+          backgroundColor:
+              widget.darkMode ? const Color(0xFF0D0D1E) : Colors.grey.shade50,
           circles: [
-            MovingCircle(color: Colors.amber.withValues(alpha: 0.6), radius: 350),
-            MovingCircle(color: Colors.pink.withValues(alpha: 0.5), radius: 450),
-            MovingCircle(color: Colors.blue.withValues(alpha: 0.4), radius: 400),
+            MovingCircle(
+                color: Colors.amber.withValues(alpha: 0.6), radius: 350),
+            MovingCircle(
+                color: Colors.pink.withValues(alpha: 0.5), radius: 450),
+            MovingCircle(
+                color: Colors.blue.withValues(alpha: 0.4), radius: 400),
           ],
           child: child,
         );
@@ -104,7 +108,8 @@ class _AppState extends State<App> {
           maxRadius: 100,
           speed: 0.8,
           blurSigma: 12.0,
-          backgroundColor: widget.darkMode ? const Color(0xFF0F0F1A) : Colors.white,
+          backgroundColor:
+              widget.darkMode ? const Color(0xFF0F0F1A) : Colors.white,
           child: child,
         );
       case BackgroundStyle.rain:
@@ -116,7 +121,9 @@ class _AppState extends State<App> {
           colors: widget.darkMode
               ? const [Colors.lightBlueAccent, Colors.purpleAccent]
               : const [Colors.blue, Colors.teal],
-          backgroundColor: widget.darkMode ? const Color(0xFF050510) : Colors.blueGrey.shade50,
+          backgroundColor: widget.darkMode
+              ? const Color(0xFF050510)
+              : Colors.blueGrey.shade50,
           child: child,
         );
       case BackgroundStyle.constellation:
@@ -127,8 +134,11 @@ class _AppState extends State<App> {
           colors: widget.darkMode
               ? const [Colors.cyanAccent, Colors.pinkAccent, Colors.white]
               : const [Colors.blueAccent, Colors.purpleAccent, Colors.teal],
-          lineColor: widget.darkMode ? const Color(0x22FFFFFF) : const Color(0x22000000),
-          backgroundColor: widget.darkMode ? const Color(0xFF070714) : Colors.white,
+          lineColor: widget.darkMode
+              ? const Color(0x22FFFFFF)
+              : const Color(0x22000000),
+          backgroundColor:
+              widget.darkMode ? const Color(0xFF070714) : Colors.white,
           child: child,
         );
       case BackgroundStyle.waves:
@@ -138,9 +148,21 @@ class _AppState extends State<App> {
           amplitude: 30.0,
           frequency: 0.006,
           colors: widget.darkMode
-              ? const [Color(0xFF8A2387), Color(0xFFE94057), Color(0xFFF27121), Colors.orangeAccent]
-              : const [Colors.blue, Colors.teal, Colors.cyan, Colors.lightBlueAccent],
-          backgroundColor: widget.darkMode ? const Color(0xFF0A0518) : Colors.lightBlue.shade50,
+              ? const [
+                  Color(0xFF8A2387),
+                  Color(0xFFE94057),
+                  Color(0xFFF27121),
+                  Colors.orangeAccent
+                ]
+              : const [
+                  Colors.blue,
+                  Colors.teal,
+                  Colors.cyan,
+                  Colors.lightBlueAccent
+                ],
+          backgroundColor: widget.darkMode
+              ? const Color(0xFF0A0518)
+              : Colors.lightBlue.shade50,
           child: child,
         );
     }
@@ -149,7 +171,9 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     final textColor = widget.darkMode ? Colors.white : Colors.black87;
-    final cardColor = widget.darkMode ? Colors.black.withValues(alpha: 0.45) : Colors.white.withValues(alpha: 0.7);
+    final cardColor = widget.darkMode
+        ? Colors.black.withValues(alpha: 0.45)
+        : Colors.white.withValues(alpha: 0.7);
 
     return Scaffold(
       body: _buildBackground(
@@ -162,66 +186,25 @@ class _AppState extends State<App> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Glassmorphic title card
-                  Card(
-                    color: cardColor,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24.0),
-                      side: BorderSide(
-                        color: widget.darkMode ? Colors.white10 : Colors.black12,
-                        width: 1.0,
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            "M O V I N G",
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 4.0,
-                              color: textColor,
-                            ),
-                          ),
-                          Text(
-                            "B A C K G R O U N D S",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 6.0,
-                              color: textColor.withValues(alpha: 0.6),
-                            ),
-                          ),
-                          const SizedBox(height: 32),
-                          const TextField(
-                            decoration: InputDecoration(
-                              labelText: 'Interactive Text Field',
-                              border: OutlineInputBorder(),
-                              prefixIcon: Icon(Icons.edit),
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Dark Mode",
-                                style: TextStyle(fontWeight: FontWeight.w600, color: textColor),
-                              ),
-                              Switch(
-                                value: widget.darkMode,
-                                onChanged: widget.onToggleDarkMode,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24.0, vertical: 32.0),
+                    child: Row(
+                      spacing: 10,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "Dark Mode",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600, color: textColor),
+                        ),
+                        Switch(
+                          value: widget.darkMode,
+                          onChanged: widget.onToggleDarkMode,
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 24),
                   // Style selection panel
                   Card(
                     color: cardColor,
@@ -229,7 +212,8 @@ class _AppState extends State<App> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20.0),
                       side: BorderSide(
-                        color: widget.darkMode ? Colors.white10 : Colors.black12,
+                        color:
+                            widget.darkMode ? Colors.white10 : Colors.black12,
                         width: 1.0,
                       ),
                     ),
